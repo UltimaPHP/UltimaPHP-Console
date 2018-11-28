@@ -1,0 +1,36 @@
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include "QTextCursor"
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+    QString program = "php";
+    QString uphpArg = "/home/mnunes/UltimaPHP/startserver.php";
+
+    uphpProcess = new QProcess(parent);
+    uphpProcess->start(program, QStringList() << uphpArg);
+    connect(uphpProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(StartProcess()));
+}
+
+void MainWindow::StartProcess()
+{
+    ui->textEdit->append(uphpProcess->readAllStandardOutput());
+    // put the slider at the bottom
+    ui->textEdit->moveCursor(QTextCursor::End);
+}
+
+MainWindow::~MainWindow()
+{
+    uphpProcess->kill();
+    delete ui;
+}
+
+void MainWindow::on_actionRun_triggered()
+{
+    StartProcess();
+}
+
